@@ -1,0 +1,34 @@
+{
+	"author": {
+		"name": "Patrik Simek",
+		"url": "http://patriksimek.cz"
+	},
+	"name": "coffee-maker",
+	"description": "A simple tool to watch and compile multiple sources at once.",
+	"keywords": [
+		"coffee",
+		"coffee-script",
+		"coffeescript",
+		"coffeemaker"
+	],
+	"version": "0.1.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/patriksimek/coffee-maker"
+	},
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "http://opensource.org/licenses/mit-license.php"
+		}
+	],
+	"dependencies": {},
+	"engines": {
+		"node": ">=0.6"
+	},
+	"bin": {
+		"coffeemaker": "./bin/coffeemaker",
+		"coffee-maker": "./bin/coffeemaker"
+	}
+}
