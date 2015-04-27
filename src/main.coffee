@@ -33,6 +33,7 @@ do ->
 	
 	if watch
 		spotted = {}
+		dirisdir = fs.lstatSync(dir).isDirectory()
 		console.log '[info] Waiting for changes...'
 		fs.watch dir, options, (event, filename) ->
 			if spotted[filename]
@@ -43,19 +44,23 @@ do ->
 				if DEBUG then console.log "Change found in '#{filename}'."
 
 				if join
-					compile dir, out, true
+					compile dir, dir, out, true
 				
 				else
-					compile path.join(dir, filename), out
+					if dirisdir
+						compile dir, path.join(dir, filename), out
+					
+					else
+						compile dir, dir, out
 			
 			, 500
 		
-		if now then setImmediate -> compile dir, out, join
+		if now then setImmediate -> compile dir, dir, out, join
 	
 	else
-		setImmediate -> compile dir, out, join
+		setImmediate -> compile dir, dir, out, join
 
-compile = (root, destination, join = false) ->
+compile = (root, source, destination, join = false) ->
 	coffees = {}
 	iterate = (file, dirs = [], isRoot = true) ->
 		name = path.basename file
@@ -85,7 +90,15 @@ compile = (root, destination, join = false) ->
 		
 		null
 	
-	iterate root
+	if root isnt source
+		# happens only when watching a folder and not joining files
+		rel = path.relative(root, source).split path.sep
+		rel.pop()
+		
+		iterate source, rel
+	
+	else
+		iterate source
 	
 	# Process includes
 	

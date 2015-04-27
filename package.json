@@ -11,7 +11,7 @@
     "coffeescript",
     "coffeemaker"
   ],
-  "version": "0.9.0",
+  "version": "0.9.1",
   "main": "index.js",
   "repository": {
     "type": "git",
