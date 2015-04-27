@@ -34,5 +34,8 @@
   "bin": {
     "coffeemaker": "./bin/coffeemaker",
     "coffee-maker": "./bin/coffeemaker"
-  }
+  },
+	"scripts": {
+		"test": "coffeemaker --bare --output ./test ./test/c.coffee"
+	}
 }

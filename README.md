@@ -32,6 +32,11 @@ c.coffee
 hello = -> console.log "#{greeting} #{who}"
 ```
 
+terminal
+```shell
+coffeemaker --bare c.coffee
+```
+
 compiled.js
 ```javascript
 var greeting, hello, who;
