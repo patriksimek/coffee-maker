@@ -1,33 +1,70 @@
 # coffee-maker
 
-A simple tool to watch multiple coffee sources at once. It simply creates multiple processes with shared stdout, so their output is consolidated to one console window.
+A simple tool to watch and compile/join multiple coffee-script files. Also adds support for including coffee files.
 
 ## Installation
 
     sudo npm install -g coffee-maker
 
-## Quick Example
+## Examples
 
-Create a **.coffeemaker** and add one command per line.
-
-#### Example:
 ```
-coffee --compile --watch --output ./app ./src/app
-coffee --compile --join base.js --watch --output ./app/public/js ./src/base
-coffee --compile --join package1.js --watch --output ./app/public/js ./src/package1
-coffee --compile --join package2.js --watch --output ./app/public/js ./src/package2
-stylus --watch --out ./app/public/css ./src/app/public/css
+coffeemaker --output ./lib ./src
+coffeemaker --join --output ./lib/joined.js ./src
+coffeemaker --watch --join --output ./lib/joined.js ./src
 ```
-*All paths must be relative to .coffeemaker file.
 
-#### And simply run:
+## Includes
 
-	$ coffeemaker
+a.coffee
+```coffee
+greeting = 'hello'
+```
+
+b.coffee
+```coffee
+who = 'world'
+```
+
+c.coffee
+```coffee
+#include a.coffee, b.coffee
+hello = -> console.log "#{greeting} #{who}"
+```
+
+compiled.js
+```javascript
+var greeting, hello, who;
+
+greeting = 'hello';
+
+who = 'world';
+
+hello = function() {
+  return console.log(greeting + " " + who);
+};
+```
+
+## Docs
+
+```shell
+  Usage: coffeemaker [options] <file ...>
+
+  Options:
+
+    -h, --help           output usage information
+    -V, --version        output the version number
+    -o, --output [path]  Set the output directory (or file when using --join) for compiled JavaScript.
+    -w, --watch          Watch scripts for changes and rerun commands.
+    -j, --join           Concatenate the source CoffeeScript before compiling.
+    -b, --bare           Compile without a top-level function wrapper.
+    -n, --now            Compile sources immediately (when using --join).
+```
 
 <a name="license" />
 ## License
 
-Copyright (c) 2013 Patrik Simek
+Copyright (c) 2015 Patrik Simek
 
 The MIT License
 
