@@ -130,7 +130,7 @@ compile = (root, source, destination, join = false) ->
 						inc = path.join path.dirname(inc), fs.readlinkSync inc
 					
 					if join then delete coffees[inc]
-					included.push "#{if DEBUG then "\n### --- Included: #{inc} --- ###\n" else ""}#{resolve inc}"
+					included.push resolve inc
 			
 			included.join '\n'
 
@@ -148,17 +148,45 @@ compile = (root, source, destination, join = false) ->
 	if join
 		joined = []
 		for file in Object.keys(coffees).sort()
-			joined.push "#{if DEBUG then "\n### --- Joined: #{file} --- ###\n" else ""}#{coffees[file].data}"
-		
+			for line, index in coffees[file].data.split '\n'
+				joined.push
+					file: file
+					text: line
+					line: index + 1
+			
 		mkdirp.sync path.dirname destination
-		fs.writeFileSync destination, HEADER + coffeescript.compile joined.join('\n'), coffeeopts
+		
+		try
+			fs.writeFileSync destination, HEADER + coffeescript.compile joined.map((line) -> line.text).join('\n'), coffeeopts
+		catch ex
+			if ex.location
+				# coffee error
+				console.error "[error] #{ex.name}: #{ex.message}\n        File: #{joined[ex.location.first_line]?.file}\n        Line: #{joined[ex.location.first_line]?.line}:#{ex.location.first_column}\n        Code: #{joined[ex.location.first_line]?.text.trim()}"
+			
+			else
+				console.error "[error] #{ex.message}"
+			
+			return
+			
 		console.log "[compiled] #{destination}"
 	
 	else
 		for file, item of coffees
-			file = path.join(destination, item.relative.replace(/\.coffee$/, '.js'))
-			mkdirp.sync path.dirname file
-			fs.writeFileSync file, HEADER + coffeescript.compile item.data, coffeeopts
-			console.log "[compiled] #{file}"
+			js = path.join(destination, item.relative.replace(/\.coffee$/, '.js'))
+			mkdirp.sync path.dirname js
+			
+			try
+				fs.writeFileSync js, HEADER + coffeescript.compile item.data, coffeeopts
+			catch ex
+				if ex.location
+					# coffee error
+					console.error "[error] #{ex.name}: #{ex.message}\n        File: #{file}\n        Line: #{ex.location.first_line + 1}:#{ex.location.first_column}\n        Code: #{item.data.split('\n')[ex.location.first_line]?.trim()}"
+				
+				else
+					console.error "[error] #{ex.message}"
+				
+				continue
+				
+			console.log "[compiled] #{js}"
 	
 	#console.log 'Done.'
